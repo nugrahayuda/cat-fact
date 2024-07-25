@@ -35,7 +35,7 @@ fun FactScreen(
         )
     ) {
         var fact by remember { mutableStateOf(viewModel.getFact()) }
-
+        val catFactModel = viewModel.getCatFactModel()
         Text(
             text = "This is Fact",
             style = MaterialTheme.typography.titleLarge
@@ -46,6 +46,22 @@ fun FactScreen(
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center
         )
+
+        if (catFactModel?.isMultipleCats == true) {
+            Text(
+                text = "Multiple cats!",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
+        if ((catFactModel?.length ?: 0) > 100) {
+            Text(
+                text = "Fact Char " + catFactModel?.length,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         val onClick = {
             fact = viewModel.updateFact { print("done") }
