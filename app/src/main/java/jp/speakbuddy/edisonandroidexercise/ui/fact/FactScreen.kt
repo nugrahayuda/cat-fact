@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -25,7 +26,7 @@ import jp.speakbuddy.edisonandroidexercise.R
 
 @Composable
 fun FactScreen(
-    viewModel: FactViewModel
+    viewModel: FactViewModel, navController : NavController
 ) {
     Column(
         modifier = Modifier
@@ -54,30 +55,34 @@ fun FactScreen(
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
-        }
 
-        if (catFactModel?.isMultipleCats == true) {
-            Text(
-                text = "Multiple cats!",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
+            if (catFactModel?.isMultipleCats == true) {
+                Text(
+                    text = "Multiple cats!",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
 
-        if ((catFactModel?.length ?: 0) > 100) {
-            Text(
-                text = "Fact Char " + catFactModel?.length,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
+            if ((catFactModel?.length ?: 0) > 100) {
+                Text(
+                    text = "Fact Char " + catFactModel?.length,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
 
-        val onClick = {
-            viewModel.fetchCatFact()
-        }
+            val onClick = {
+                viewModel.fetchCatFact()
+            }
 
-        Button(onClick = onClick) {
-            Text(text = "Update Fact")
+            Button(onClick = onClick) {
+                Text(text = "Update Fact")
+            }
+
+            Button(onClick = { navController.navigate("history_screen") }) {
+                Text("View History")
+            }
         }
     }
 }

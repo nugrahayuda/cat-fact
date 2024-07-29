@@ -30,6 +30,7 @@ class FactViewModel(private val userPreferencesRepository: UserPreferencesReposi
             repository.getCatFact().collect { fact ->
                 catFactFlow.value = handleResponse(fact)
                 userPreferencesRepository.updateLastFact(fact.fact)
+                userPreferencesRepository.saveCatFact(fact.fact)
             }
             delay(2000) // Add delay to show the animation
             isLoadingFlow.value = false
