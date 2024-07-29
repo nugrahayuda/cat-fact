@@ -36,8 +36,7 @@ fun FactScreen(
         )
     ) {
         var fact by remember { mutableStateOf(viewModel.getLastFact()) }
-        val catFact by viewModel.catFact.collectAsState()
-        val catFactModel = viewModel.getCatFactModel()
+        val catFactModel by viewModel.catFact.collectAsState()
         Text(
             text = "This is Fact",
             style = MaterialTheme.typography.titleLarge

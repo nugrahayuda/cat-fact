@@ -1,6 +1,7 @@
 package jp.speakbuddy.edisonandroidexercise.network
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import jp.speakbuddy.edisonandroidexercise.data.model.FactResponse
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -11,12 +12,6 @@ interface FactService {
     @GET("fact")
     suspend fun getFact(): FactResponse
 }
-
-@Serializable
-data class FactResponse(
-    val fact: String,
-    val length: Int
-)
 
 object FactServiceProvider {
     fun provide(): FactService =

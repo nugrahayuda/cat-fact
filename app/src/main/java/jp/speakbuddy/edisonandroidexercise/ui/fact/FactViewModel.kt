@@ -4,28 +4,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import jp.speakbuddy.edisonandroidexercise.data.CatFactRepository
 import jp.speakbuddy.edisonandroidexercise.data.UserPreferencesRepository
-import jp.speakbuddy.edisonandroidexercise.network.FactResponse
+import jp.speakbuddy.edisonandroidexercise.data.model.FactResponse
 import jp.speakbuddy.edisonandroidexercise.network.FactServiceProvider
+import jp.speakbuddy.edisonandroidexercise.ui.model.CatFactModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class FactViewModel(private val userPreferencesRepository: UserPreferencesRepository) : ViewModel() {
-    private var catFactModel: CatFactModel? = null
     private val repository: CatFactRepository = CatFactRepository(FactServiceProvider.provide())
-    private val catFactFlow = MutableStateFlow<FactResponse?>(null)
-    val catFact: StateFlow<FactResponse?> = catFactFlow
+    private val catFactFlow = MutableStateFlow<CatFactModel?>(null)
+    val catFact: StateFlow<CatFactModel?> = catFactFlow
 
     init {
         getLastFact()
     }
 
-    fun getCatFactModel() = catFactModel
-
     fun fetchCatFact() {
         viewModelScope.launch {
             repository.getCatFact().collect { fact ->
-                catFactFlow.value = fact
+                catFactFlow.value = handleResponse(fact)
                 userPreferencesRepository.updateLastFact(fact.fact)
             }
         }
@@ -34,16 +32,18 @@ class FactViewModel(private val userPreferencesRepository: UserPreferencesReposi
     fun getLastFact() {
         viewModelScope.launch {
             val fact = userPreferencesRepository.getLastFact()
-            handleResponse(fact)
+            catFactFlow.value = CatFactModel(fact, fact.length, isMultipleCats(fact))
         }
     }
 
-    private fun handleResponse(fact: String) {
-        catFactModel = CatFactModel(
-            fact = fact,
+    private fun handleResponse(fact: FactResponse): CatFactModel {
+        val catFactModel = CatFactModel(
+            fact = fact.fact,
             length = fact.length,
-            isMultipleCats = isMultipleCats(fact)
+            isMultipleCats = isMultipleCats(fact.fact)
         )
+
+        return catFactModel
     }
 
     private fun isMultipleCats(text: String): Boolean {
@@ -52,9 +52,3 @@ class FactViewModel(private val userPreferencesRepository: UserPreferencesReposi
         return matches.count() > 1
     }
 }
-
-data class CatFactModel(
-    val fact: String,
-    val length: Int,
-    val isMultipleCats: Boolean
-)
