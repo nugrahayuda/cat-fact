@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import jp.speakbuddy.edisonandroidexercise.EdisonAndroidExerciseApplication.Companion.dataStore
+import jp.speakbuddy.edisonandroidexercise.data.CatFactRepository
 import jp.speakbuddy.edisonandroidexercise.data.UserPreferencesRepository
 import jp.speakbuddy.edisonandroidexercise.ui.fact.FactScreen
 import jp.speakbuddy.edisonandroidexercise.ui.fact.FactViewModel

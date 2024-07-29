@@ -9,6 +9,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +35,8 @@ fun FactScreen(
             alignment = Alignment.CenterVertically
         )
     ) {
-        var fact by remember { mutableStateOf(viewModel.getFact()) }
+        var fact by remember { mutableStateOf(viewModel.getLastFact()) }
+        val catFact by viewModel.catFact.collectAsState()
         val catFactModel = viewModel.getCatFactModel()
         Text(
             text = "This is Fact",
@@ -64,7 +66,7 @@ fun FactScreen(
         }
 
         val onClick = {
-            fact = viewModel.callAPIGetFact()
+            fact = viewModel.fetchCatFact()
         }
 
         Button(onClick = onClick) {

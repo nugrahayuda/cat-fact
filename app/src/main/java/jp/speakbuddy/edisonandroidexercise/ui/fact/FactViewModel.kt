@@ -1,48 +1,38 @@
 package jp.speakbuddy.edisonandroidexercise.ui.fact
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import jp.speakbuddy.edisonandroidexercise.data.CatFactRepository
 import jp.speakbuddy.edisonandroidexercise.data.UserPreferencesRepository
+import jp.speakbuddy.edisonandroidexercise.network.FactResponse
 import jp.speakbuddy.edisonandroidexercise.network.FactServiceProvider
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class FactViewModel(private val userPreferencesRepository: UserPreferencesRepository) : ViewModel() {
     private var catFactModel: CatFactModel? = null
+    private val repository: CatFactRepository = CatFactRepository(FactServiceProvider.provide())
+    private val catFactFlow = MutableStateFlow<FactResponse?>(null)
+    val catFact: StateFlow<FactResponse?> = catFactFlow
+
+    init {
+        getLastFact()
+    }
 
     fun getCatFactModel() = catFactModel
 
-    private val scope = CoroutineScope(Job() + Dispatchers.Main)
-
-
-    fun updateFact(completion: () -> Unit): String =
-        runBlocking {
-            try {
-                val fact = FactServiceProvider.provide().getFact().fact
-                handleResponse(fact)
-                userPreferencesRepository.updateLastFact(fact)
-                return@runBlocking fact
-            } catch (e: Throwable) {
-                "something went wrong. error = ${e.message}"
-            }.also { completion() }
-        }
-
-    fun callAPIGetFact() {
-        scope.launch {
-            val fact = FactServiceProvider.provide().getFact().fact
-            catFactModel = CatFactModel(
-                fact = fact,
-                length = fact.length,
-                isMultipleCats = isMultipleCats(fact)
-            )
-            userPreferencesRepository.updateLastFact(fact)
+    fun fetchCatFact() {
+        viewModelScope.launch {
+            repository.getCatFact().collect { fact ->
+                catFactFlow.value = fact
+                userPreferencesRepository.updateLastFact(fact.fact)
+            }
         }
     }
 
-    fun getFact() {
-        scope.launch {
+    fun getLastFact() {
+        viewModelScope.launch {
             val fact = userPreferencesRepository.getLastFact()
             handleResponse(fact)
         }
