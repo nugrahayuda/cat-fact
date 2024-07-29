@@ -42,7 +42,7 @@ fun FactScreen(
         )
 
         Text(
-            text = fact,
+            text = catFactModel?.fact ?: "",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center
         )
@@ -64,7 +64,7 @@ fun FactScreen(
         }
 
         val onClick = {
-            fact = viewModel.updateFact { print("done") }
+            fact = viewModel.callAPIGetFact()
         }
 
         Button(onClick = onClick) {
