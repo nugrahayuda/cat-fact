@@ -11,13 +11,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import jp.speakbuddy.edisonandroidexercise.R
 
 
 @Composable
@@ -35,18 +38,23 @@ fun FactScreen(
             alignment = Alignment.CenterVertically
         )
     ) {
-        var fact by remember { mutableStateOf(viewModel.getLastFact()) }
         val catFactModel by viewModel.catFact.collectAsState()
-        Text(
-            text = "This is Fact",
-            style = MaterialTheme.typography.titleLarge
-        )
+        val isLoading by viewModel.isLoading.collectAsState()
 
-        Text(
-            text = catFactModel?.fact ?: "",
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center
-        )
+        if (isLoading) {
+            AnimatedPreloader()
+        } else {
+            Text(
+                text = "This is Fact",
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            Text(
+                text = catFactModel?.fact ?: "",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
+        }
 
         if (catFactModel?.isMultipleCats == true) {
             Text(
@@ -65,11 +73,31 @@ fun FactScreen(
         }
 
         val onClick = {
-            fact = viewModel.fetchCatFact()
+            viewModel.fetchCatFact()
         }
 
         Button(onClick = onClick) {
             Text(text = "Update Fact")
         }
     }
+}
+
+@Composable
+fun AnimatedPreloader() {
+    val preloaderLottieComposition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(
+            R.raw.animation_preloader
+        )
+    )
+
+    val preloaderProgress by animateLottieCompositionAsState(
+        preloaderLottieComposition,
+        iterations = LottieConstants.IterateForever,
+        isPlaying = true
+    )
+
+    LottieAnimation(
+        composition = preloaderLottieComposition,
+        progress = preloaderProgress
+    )
 }

@@ -7,6 +7,7 @@ import jp.speakbuddy.edisonandroidexercise.data.UserPreferencesRepository
 import jp.speakbuddy.edisonandroidexercise.data.model.FactResponse
 import jp.speakbuddy.edisonandroidexercise.network.FactServiceProvider
 import jp.speakbuddy.edisonandroidexercise.ui.model.CatFactModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -16,16 +17,22 @@ class FactViewModel(private val userPreferencesRepository: UserPreferencesReposi
     private val catFactFlow = MutableStateFlow<CatFactModel?>(null)
     val catFact: StateFlow<CatFactModel?> = catFactFlow
 
+    private val isLoadingFlow = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = isLoadingFlow
+
     init {
         getLastFact()
     }
 
     fun fetchCatFact() {
         viewModelScope.launch {
+            isLoadingFlow.value = true
             repository.getCatFact().collect { fact ->
                 catFactFlow.value = handleResponse(fact)
                 userPreferencesRepository.updateLastFact(fact.fact)
             }
+            delay(2000) // Add delay to show the animation
+            isLoadingFlow.value = false
         }
     }
 
