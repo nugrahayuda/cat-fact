@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 private const val CAT_FACT_KEY = "cat_fact"
-private const val CAT_FACT_HISTORY_KEY = "cat_fact"
+private const val CAT_FACT_HISTORY_KEY = "cat_history"
 
 class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
 

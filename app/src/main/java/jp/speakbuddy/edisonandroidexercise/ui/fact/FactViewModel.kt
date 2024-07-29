@@ -37,7 +37,7 @@ class FactViewModel(private val userPreferencesRepository: UserPreferencesReposi
         }
     }
 
-    fun getLastFact() {
+    private fun getLastFact() {
         viewModelScope.launch {
             val fact = userPreferencesRepository.getLastFact()
             catFactFlow.value = CatFactModel(fact, fact.length, isMultipleCats(fact))
